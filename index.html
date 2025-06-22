@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pulse Digital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0c0c1b;
+      --accent: #00fff0;
+      --text: #ffffff;
+      --card-bg: #1a1a2e;
+      --glow: 0 0 15px #00fff0;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background-color: var(--primary);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    header {
+      background: var(--accent);
+      color: var(--primary);
+      padding: 1rem;
+      text-align: center;
+      font-size: 2rem;
+    }
+    nav {
+      background: var(--primary);
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      padding: 1rem;
+    }
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      color: var(--accent);
+    }
+    section {
+      padding: 2rem;
+    }
+    h2 {
+      color: var(--accent);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .announcement {
+      background: rgba(0, 255, 240, 0.1);
+      border-left: 4px solid var(--accent);
+      padding: 1rem;
+      margin: 2rem auto;
+      max-width: 800px;
+      font-size: 1rem;
+      color: var(--text);
+      border-radius: 8px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: var(--glow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .card:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 0 25px #00fff0;
+    }
+    .buy-btn {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 0.5rem 1rem;
+      margin-top: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 5px;
+      transition: background 0.3s ease;
+    }
+    .buy-btn:hover {
+      background: #00e0cc;
+    }
+    #cart-list button {
+      background: crimson;
+      color: white;
+      border: none;
+      margin-left: 10px;
+      cursor: pointer;
+      padding: 0.3rem 0.6rem;
+      border-radius: 3px;
+    }
+    #cart-notice {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--accent);
+      color: var(--primary);
+      padding: 0.8rem 1.2rem;
+      border-radius: 8px;
+      font-weight: bold;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+      z-index: 1000;
+    }
+  </style>
+  <script>
+    let cart = JSON.parse(sessionStorage.getItem("cart")) || [];
+    function addToCart(productName, price) {
+      cart.push({ name: productName, price: price });
+      sessionStorage.setItem("cart", JSON.stringify(cart));
+      renderCart();
+      showCartNotice(productName);
+    }
+    function showCartNotice(productName) {
+      const notice = document.getElementById("cart-notice");
+      notice.textContent = `${productName} added to cart!`;
+      notice.style.display = "block";
+      setTimeout(() => {
+        notice.style.opacity = 1;
+        setTimeout(() => {
+          notice.style.opacity = 0;
+          setTimeout(() => {
+            notice.style.display = "none";
+          }, 300);
+        }, 1500);
+      }, 10);
+    }
+    function renderCart() {
+      const cartList = document.getElementById("cart-list");
+      const cartTotal = document.getElementById("cart-total");
+      if (!cartList || !cartTotal) return;
+      cartList.innerHTML = "";
+      let total = 0;
+      cart.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `${item.name} - $${item.price.toFixed(2)} <button onclick="removeFromCart(${index})">Remove</button>`;
+        cartList.appendChild(li);
+        total += item.price;
+      });
+      cartTotal.textContent = total.toFixed(2);
+    }
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      sessionStorage.setItem("cart", JSON.stringify(cart));
+      renderCart();
+    }
+    function checkoutCart() {
+      if (cart.length === 0) {
+        alert("Cart is empty!");
+        return;
+      }
+      window.location.href = "https://payhip.com/b/pjrGO";
+    }
+    window.onload = renderCart;
+  </script>
+</head>
+<body>
+  <header>Pulse Digital</header>
+  <nav>
+    <a href="#services">Services</a>
+    <a href="#cart">Cart</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <div class="announcement">
+    We’re sorry to announce that <strong>Pulse Digital R6 Pro</strong> and our other products are no longer available. The developer has moved on to new opportunities in cybersecurity. We appreciate your support, and we hope to relaunch under the same name with new offerings in the future.
+  </div>
+  <section id="services">
+    <h2>Our Products</h2>
+    <div class="cards">
+      <!-- Products removed intentionally -->
+    </div>
+  </section>
+  <section id="cart">
+    <h2>Your Cart</h2>
+    <ul id="cart-list" style="list-style: none; padding: 0;"></ul>
+    <h3>Total: $<span id="cart-total">0.00</span></h3>
+    <button class="buy-btn" onclick="checkoutCart()">Checkout</button>
+  </section>
+  <div id="cart-notice"></div>
+</body>
+</html>
